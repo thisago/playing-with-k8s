@@ -22,7 +22,7 @@ infra-init:
 .PHONY: infra-plan
 infra-plan:
 	test -f $(ENV_FILE) && source $(ENV_FILE) && \
-  tofu -chdir=$(INFRA_DIR) plan -out=$(INFRA_PLAN_FILE)
+	tofu -chdir=$(INFRA_DIR) plan -out=$(INFRA_PLAN_FILE)
 
 .PHONY: infra-apply
 infra-apply:
