@@ -1,0 +1,9 @@
+/.env
+.aider*
+
+# Infra
+/tofu/terraform.tfstate
+/tofu/.terraform/
+/tofu/plan.tfplan
+/tofu/.terraform.tfstate.lock.info
+/tofu/terraform.tfstate.backup

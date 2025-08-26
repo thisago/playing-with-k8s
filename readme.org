@@ -1,1 +1,10 @@
-#+title: infra
+#+title: K8s infra
+
+Managed infra for my open source projects.
+
+* OpenTofu
+Manages Vultr clusters and K8s resources
+
+* Helm
+
+* Cloud-init
