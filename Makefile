@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 INFRA_DIR := ./tofu
 INFRA_PLAN_FILE := plan.tfplan
 
@@ -48,4 +49,4 @@ clean:
 			echo "Removed $$file"; \
 		fi; \
 	done && \
-  echo "Clean up completed."
+	echo "Clean up completed."
