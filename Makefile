@@ -4,12 +4,16 @@ INFRA_PLAN_FILE := plan.tfplan
 
 ENV_FILE := ./.env
 
+KUBECONFIG_CMD := $$(tofu -chdir=$(INFRA_DIR) output -raw kubeconfig_path 2>/dev/null || echo "")
+
 .PHONY: help
 help:
 	@echo "Current configs:"
 	@echo "  INFRA_DIR: $(INFRA_DIR)"
 	@echo "  INFRA_PLAN_FILE: $(INFRA_PLAN_FILE)"
 	@echo "  ENV_FILE: $(ENV_FILE)"
+	@echo "Dynamically obtained values:"
+	@echo "  KUBECONFIG_CMD: $(KUBECONFIG_CMD)"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  IaC targets:"
@@ -41,10 +45,11 @@ infra-apply:
 clean:
 	@echo "Cleaning up generated files..."; \
 	files=( \
-		"$(INFRA_DIR)/$$(tofu -chdir=$(INFRA_DIR) output -raw kubeconfig_path)" \
+		"$(INFRA_DIR)/$(INFRA_PLAN_FILE)" \
+		"$(INFRA_DIR)/$(KUBECONFIG_CMD)" \
 	); \
 	for file in $${files[@]}; do \
-		if [ -f $$file ]; then \
+		if [ -n "$$file" ] && [ -f "$$file" ]; then \
 			rm -f $$file; \
 			echo "Removed $$file"; \
 		fi; \
