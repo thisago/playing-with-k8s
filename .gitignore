@@ -7,3 +7,4 @@
 /tofu/plan.tfplan
 /tofu/.terraform.tfstate.lock.info
 /tofu/terraform.tfstate.backup
+/tofu/.kubeconfig

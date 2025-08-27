@@ -23,11 +23,14 @@ resource "vultr_kubernetes" "kbcl1" {
 
   node_pools {
     label         = "kbpl1"
-    plan          = "vc2-1c-2gb"
+    plan          = var.one_cpu_two_gb_ram
     node_quantity = 1
   }
 }
 
-# commands to import
-# tofu -chdir=tofu import vultr_vpc2.kbvpc1 vpc-123456
-# tofu -chdir=tofu import vultr_kubernetes.cluster k8s-123456
+resource "local_file" "kbcl1_kube_config" {
+  content         = base64decode(vultr_kubernetes.kbcl1.kube_config)
+  filename        = var.kubeconfig_path
+  file_permission = "0600"
+  depends_on      = [vultr_kubernetes.kbcl1]
+}
