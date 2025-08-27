@@ -20,6 +20,7 @@ help:
 	@echo "    infra-init       Initialize infrastructure"
 	@echo "    infra-plan       Plan infrastructure changes"
 	@echo "    infra-apply      Apply infrastructure changes"
+	@echo "    infra-refresh    Refresh infrastructure state"
 	@echo "  Other targets:"
 	@echo "    clean            Clean up generated files"
 
@@ -39,6 +40,11 @@ infra-apply:
 	test -f $(ENV_FILE) && source $(ENV_FILE) && \
 	test -f $(INFRA_DIR)/$(INFRA_PLAN_FILE) && \
 	tofu -chdir=$(INFRA_DIR) apply $(INFRA_PLAN_FILE)
+
+.PHONY: infra-refresh
+infra-refresh:
+	test -f $(ENV_FILE) && source $(ENV_FILE) && \
+	tofu -chdir=$(INFRA_DIR) refresh
 
 
 .PHONY: clean
