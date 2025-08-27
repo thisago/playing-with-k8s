@@ -4,7 +4,7 @@ INFRA_PLAN_FILE := plan.tfplan
 
 ENV_FILE := ./.env
 
-KUBECONFIG_CMD := $$(tofu -chdir=$(INFRA_DIR) output -raw kubeconfig_path 2>/dev/null || echo "")
+KUBECONFIG_PATH := $$(tofu -chdir=$(INFRA_DIR) output -raw kubeconfig_path 2>/dev/null || echo "")
 
 .PHONY: help
 help:
@@ -13,7 +13,7 @@ help:
 	@echo "  INFRA_PLAN_FILE: $(INFRA_PLAN_FILE)"
 	@echo "  ENV_FILE: $(ENV_FILE)"
 	@echo "Dynamically obtained values:"
-	@echo "  KUBECONFIG_CMD: $(KUBECONFIG_CMD)"
+	@echo "  KUBECONFIG_PATH: $(KUBECONFIG_PATH)"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  IaC targets:"
@@ -46,7 +46,7 @@ clean:
 	@echo "Cleaning up generated files..."; \
 	files=( \
 		"$(INFRA_DIR)/$(INFRA_PLAN_FILE)" \
-		"$(INFRA_DIR)/$(KUBECONFIG_CMD)" \
+		"$(INFRA_DIR)/$(KUBECONFIG_PATH)" \
 	); \
 	for file in $${files[@]}; do \
 		if [ -n "$$file" ] && [ -f "$$file" ]; then \
