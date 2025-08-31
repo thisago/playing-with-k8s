@@ -5,6 +5,9 @@ terraform {
       version = "2.27.1"
     }
   }
+  backend "local" {
+    path = "tfstates/terraform.tfstate"
+  }
 }
 
 provider "vultr" {}
