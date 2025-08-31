@@ -13,6 +13,7 @@ help:
 	@echo "  INFRA_DIR: $(INFRA_DIR)"
 	@echo "  INFRA_PLAN_FILE: $(INFRA_PLAN_FILE)"
 	@echo "  ENV_FILE: $(ENV_FILE)"
+	@echo "  INFRA_TFSTATE_DIR: $(INFRA_TFSTATE_DIR)"
 	@echo "Dynamically obtained values:"
 	@echo "  KUBECONFIG_PATH: $(KUBECONFIG_PATH)"
 	@echo ""
