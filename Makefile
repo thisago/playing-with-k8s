@@ -1,6 +1,7 @@
 SHELL := /bin/bash
 INFRA_DIR := ./tofu
 INFRA_PLAN_FILE := plan.tfplan
+INFRA_TFSTATE_DIR := $(INFRA_DIR)/tfstates
 
 ENV_FILE := ./.env
 
@@ -24,7 +25,6 @@ help:
 	@echo "  Other targets:"
 	@echo "    clean            Clean up generated files"
 
-
 .PHONY: infra-init
 infra-init:
 	test -f $(ENV_FILE) && source $(ENV_FILE) && \
@@ -40,12 +40,24 @@ infra-apply:
 	test -f $(ENV_FILE) && source $(ENV_FILE) && \
 	test -f $(INFRA_DIR)/$(INFRA_PLAN_FILE) && \
 	tofu -chdir=$(INFRA_DIR) apply $(INFRA_PLAN_FILE)
+	$(MAKE) infra-commit-tfstate
 
 .PHONY: infra-refresh
 infra-refresh:
 	test -f $(ENV_FILE) && source $(ENV_FILE) && \
 	tofu -chdir=$(INFRA_DIR) refresh
+	$(MAKE) infra-commit-tfstate
 
+.PHONY: infra-commit-tfstate
+infra-commit-tfstate:
+	@cd $(INFRA_TFSTATE_DIR) && \
+	if ! git diff --quiet; then \
+		pre-commit run --all-files; \
+		git add . && \
+		git commit -m "chore: tfstate"; \
+	else \
+		echo "Nothing to commit"; \
+	fi
 
 .PHONY: clean
 clean:
