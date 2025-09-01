@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nims-tofu-cloud
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nims-tofu-cloud
+  template:
+    metadata:
+      labels:
+        app: nims-tofu-cloud
+    spec:
+      containers:
+      - name: nims-tofu-cloud
+        image: ghcr.io/thisago/thisago/nims-tofu-cloud:v0.2.0
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nims-tofu-cloud
+  namespace: default
+spec:
+  selector:
+    app: nims-tofu-cloud
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nims-tofu-cloud
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: nims-tofu-cloud.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nims-tofu-cloud
+                port:
+                  number: 80
