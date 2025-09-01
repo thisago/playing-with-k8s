@@ -9,4 +9,4 @@ releases:
     namespace: default
     chart: ./nims-tofu-cloud
     values:
-      - values.yaml
+      - ./nims-tofu-cloud/values.yaml

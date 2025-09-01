@@ -44,6 +44,7 @@ help:
 	@echo "    helmfile-apply    Runs apply command with kubeconfig set"
 	@echo "    helmfile-diff     Runs diff helmfile command"
 	@echo "    helmfile-destroy  Runs destroy helmfile command"
+	@echo "    helm-test         Tests all charts"
 	@echo "  Other targets:"
 	@echo "    clean            Clean up generated files"
 
@@ -82,6 +83,10 @@ tofu-commit-tfstate:
 	fi
 
 # Helm
+
+.PHONY: helm-test
+helm-test:
+	helmfile -f $(HELM_DIR)/helmfile.yaml test --cleanup
 
 .PHONY: helmfile-apply
 helmfile-apply: internal-guard-cluster
