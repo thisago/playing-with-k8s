@@ -13,7 +13,7 @@ HELMFILE := helmfile -f "$(HELM_DIR)/helmfile.yaml"
 
 # Define the cluster auth
 ENV ?= dev
-KUBECONFIG_DEV := ./clusters/local-kubeconfig.yaml
+KUBECONFIG_DEV := /home/$$USER/.kube/config
 KUBECONFIG_PROD := $(INFRA_DIR)/$$($(TOFU) output -raw kubeconfig_path 2>/dev/null || echo "")
 KUBECONFIG_EFFECTIVE := $(if $(filter $(ENV),dev),$(KUBECONFIG_DEV),$(KUBECONFIG_PROD))
 
@@ -42,6 +42,7 @@ help:
 	@echo "    tofu-refresh    Refresh infrastructure state"
 	@echo "  Helm/helmfile targets:"
 	@echo "    helmfile-apply  Runs apply command with kubeconfig set"
+	@echo "    helmfile-diff   Runs diff helmfile command"
 	@echo "  Other targets:"
 	@echo "    clean            Clean up generated files"
 
@@ -82,10 +83,15 @@ tofu-commit-tfstate:
 # Helm
 
 .PHONY: helmfile-apply
-helmfile-apply:
+helmfile-apply: internal-guard-cluster
 	export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
-	test -f "$$KUBECONFIG" && \
 	$(HELMFILE) apply
+
+.PHONY: helmfile-diff
+helmfile-diff: internal-guard-cluster
+	export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
+	$(HELMFILE) diff
+
 
 # Others
 
@@ -103,3 +109,14 @@ clean:
 		fi; \
 	done && \
 	echo "Clean up completed."
+
+# Internal
+internal-guard-cluster:
+	@export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
+	test -f "$$KUBECONFIG" && \
+	if [ "$(ENV)" != "dev" ]; then exit 0; fi; \
+	cluster=$$(kubectl config view --minify -o jsonpath='{.clusters[0].name}'); \
+	if [ "$$cluster" != "minikube" ] && [ "$$cluster" != "docker-desktop" ]; then \
+		echo "Your local kubeconfig ($(KUBECONFIG_DEV)) seems to not be local (cluster: $$cluster)!"; \
+		exit 1; \
+	fi
