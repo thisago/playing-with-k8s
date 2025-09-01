@@ -19,38 +19,38 @@ help:
 	@echo ""
 	@echo "Available targets:"
 	@echo "  IaC targets:"
-	@echo "    infra-init       Initialize infrastructure"
-	@echo "    infra-plan       Plan infrastructure changes"
-	@echo "    infra-apply      Apply infrastructure changes"
-	@echo "    infra-refresh    Refresh infrastructure state"
+	@echo "    tofu-init       Initialize infrastructure"
+	@echo "    tofu-plan       Plan infrastructure changes"
+	@echo "    tofu-apply      Apply infrastructure changes"
+	@echo "    tofu-refresh    Refresh infrastructure state"
 	@echo "  Other targets:"
 	@echo "    clean            Clean up generated files"
 
-.PHONY: infra-init
-infra-init:
+.PHONY: tofu-init
+tofu-init:
 	test -f $(ENV_FILE) && source $(ENV_FILE) && \
 	tofu -chdir=$(INFRA_DIR) init
 
-.PHONY: infra-plan
-infra-plan:
+.PHONY: tofu-plan
+tofu-plan:
 	test -f $(ENV_FILE) && source $(ENV_FILE) && \
 	tofu -chdir=$(INFRA_DIR) plan -out=$(INFRA_PLAN_FILE)
 
-.PHONY: infra-apply
-infra-apply:
+.PHONY: tofu-apply
+tofu-apply:
 	test -f $(ENV_FILE) && source $(ENV_FILE) && \
 	test -f $(INFRA_DIR)/$(INFRA_PLAN_FILE) && \
 	tofu -chdir=$(INFRA_DIR) apply $(INFRA_PLAN_FILE)
-	$(MAKE) infra-commit-tfstate
+	$(MAKE) tofu-commit-tfstate
 
-.PHONY: infra-refresh
-infra-refresh:
+.PHONY: tofu-refresh
+tofu-refresh:
 	test -f $(ENV_FILE) && source $(ENV_FILE) && \
 	tofu -chdir=$(INFRA_DIR) refresh
-	$(MAKE) infra-commit-tfstate
+	$(MAKE) tofu-commit-tfstate
 
-.PHONY: infra-commit-tfstate
-infra-commit-tfstate:
+.PHONY: tofu-commit-tfstate
+tofu-commit-tfstate:
 	@cd $(INFRA_TFSTATE_DIR) && \
 	if ! git diff --quiet; then \
 		pre-commit run --all-files; \
