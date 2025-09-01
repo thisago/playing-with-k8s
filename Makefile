@@ -41,8 +41,9 @@ help:
 	@echo "    tofu-apply      Apply infrastructure changes"
 	@echo "    tofu-refresh    Refresh infrastructure state"
 	@echo "  Helm/helmfile targets:"
-	@echo "    helmfile-apply  Runs apply command with kubeconfig set"
-	@echo "    helmfile-diff   Runs diff helmfile command"
+	@echo "    helmfile-apply    Runs apply command with kubeconfig set"
+	@echo "    helmfile-diff     Runs diff helmfile command"
+	@echo "    helmfile-destroy  Runs destroy helmfile command"
 	@echo "  Other targets:"
 	@echo "    clean            Clean up generated files"
 
@@ -91,6 +92,11 @@ helmfile-apply: internal-guard-cluster
 helmfile-diff: internal-guard-cluster
 	export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
 	$(HELMFILE) diff
+
+.PHONY: helm-destroy
+helm-destroy:
+	export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
+	$(HELMFILE) destroy
 
 
 # Others

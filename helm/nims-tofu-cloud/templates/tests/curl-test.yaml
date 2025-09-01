@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "nims-tofu-cloud.fullname" . }}-curl-test"
+  labels:
+    app.kubernetes.io/name: {{ include "nims-tofu-cloud.name" . }}
+    helm.sh/chart: {{ include "nims-tofu-cloud.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: curl
+      image: curlimages/curl:8.7.1
+      command: ["curl"]
+      args: ["--fail", "--max-time", "10", "http://{{ include "nims-tofu-cloud.fullname" . }}:{{ .Values.service.port }}"]

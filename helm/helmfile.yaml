@@ -4,3 +4,9 @@ releases:
     chart: ingress-nginx/ingress-nginx
     version: 4.10.1
     values: []
+
+  - name: nims-tofu-cloud
+    namespace: default
+    chart: ./nims-tofu-cloud
+    values:
+      - values.yaml
