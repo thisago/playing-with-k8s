@@ -1,6 +1,6 @@
 #+title: K8s infra
 
-Managed infra for my open source projects.
+Initial setup for a complete K8s setup.
 
 * OpenTofu
 Manages Vultr clusters and K8s resources
