@@ -93,8 +93,8 @@ helmfile-diff: internal-guard-cluster
 	export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
 	$(HELMFILE) diff
 
-.PHONY: helm-destroy
-helm-destroy:
+.PHONY: helmfile-destroy
+helmfile-destroy:
 	export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
 	$(HELMFILE) destroy
 
