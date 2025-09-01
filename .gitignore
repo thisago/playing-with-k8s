@@ -1,10 +1,9 @@
 /.env
 .aider*
 
-# Infra
-/tofu/terraform.tfstate
-/tofu/.terraform/
-/tofu/plan.tfplan
-/tofu/.terraform.tfstate.lock.info
-/tofu/terraform.tfstate.backup
-/tofu/.kubeconfig
+/clusters/terraform.tfstate
+/clusters/.terraform/
+/clusters/plan.tfplan
+/clusters/.terraform.tfstate.lock.info
+/clusters/terraform.tfstate.backup
+/clusters/.kubeconfig

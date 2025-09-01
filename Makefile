@@ -1,29 +1,38 @@
 SHELL := /bin/bash
-INFRA_DIR := ./tofu
+
+INFRA_DIR := ./clusters
 HELM_DIR := ./helm
 INFRA_PLAN_FILE := plan.tfplan
 INFRA_TFSTATE_DIR := $(INFRA_DIR)/tfstates
 
 ENV_FILE := ./.env
 
-KUBECONFIG_PATH := $$(tofu -chdir=$(INFRA_DIR) output -raw kubeconfig_path 2>/dev/null || echo "")
-
 TOFU := tofu -chdir="$(INFRA_DIR)"
+HELM := helm
 HELMFILE := helmfile -f "$(HELM_DIR)/helmfile.yaml"
+
+# Define the cluster auth
+ENV ?= dev
+KUBECONFIG_DEV := ./clusters/local-kubeconfig.yaml
+KUBECONFIG_PROD := $(INFRA_DIR)/$$($(TOFU) output -raw kubeconfig_path 2>/dev/null || echo "")
+KUBECONFIG_EFFECTIVE := $(if $(filter $(ENV),dev),$(KUBECONFIG_DEV),$(KUBECONFIG_PROD))
 
 .PHONY: help
 help:
 	@echo "Current configs:"
-	@echo "  INFRA_DIR: $(INFRA_DIR)"
-	@echo "  HELM_DIR: $(HELM_DIR)"
-	@echo "  INFRA_PLAN_FILE: $(INFRA_PLAN_FILE)"
+	@echo "  ENV: $(ENV)"
 	@echo "  ENV_FILE: $(ENV_FILE)"
+	@echo "  INFRA_DIR: $(INFRA_DIR)"
+	@echo "  INFRA_PLAN_FILE: $(INFRA_PLAN_FILE)"
 	@echo "  INFRA_TFSTATE_DIR: $(INFRA_TFSTATE_DIR)"
 	@echo "  TOFU: $(TOFU)"
+	@echo "  KUBECONFIG_DEV: $(KUBECONFIG_DEV)"
+	@echo "  HELM_DIR: $(HELM_DIR)"
 	@echo "  HELM: $(HELM)"
 	@echo "  HELMFILE: $(HELMFILE)"
 	@echo "Dynamically obtained values:"
-	@echo "  KUBECONFIG_PATH: $(KUBECONFIG_PATH)"
+	@echo "  KUBECONFIG_PROD: $(KUBECONFIG_PROD)"
+	@echo "  KUBECONFIG_EFFECTIVE: $(KUBECONFIG_EFFECTIVE)"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  Tofu targets:"
@@ -74,7 +83,7 @@ tofu-commit-tfstate:
 
 .PHONY: helmfile-apply
 helmfile-apply:
-	export KUBECONFIG="$(INFRA_DIR)/$(KUBECONFIG_PATH)"; \
+	export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
 	test -f "$$KUBECONFIG" && \
 	$(HELMFILE) apply
 
@@ -85,7 +94,7 @@ clean:
 	@echo "Cleaning up generated files..."; \
 	files=( \
 		"$(INFRA_DIR)/$(INFRA_PLAN_FILE)" \
-		"$(INFRA_DIR)/$(KUBECONFIG_PATH)" \
+		"$(INFRA_DIR)/$(KUBECONFIG_EFFECTIVE)" \
 	); \
 	for file in $${files[@]}; do \
 		if [ -n "$$file" ] && [ -f "$$file" ]; then \
