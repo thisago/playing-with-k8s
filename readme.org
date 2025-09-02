@@ -32,7 +32,10 @@ done
 
 * How to run
 1. Add your Vultr PAT at =.env=
-2. src_bash[:exports code]{make tofu-init tofu-plan tofu-apply helmfile-apply}
+2. Run
+   #+begin_src bash
+   make tofu-init tofu-plan tofu-apply helmfile-apply
+   #+end_src
 3. Done.
 
 
