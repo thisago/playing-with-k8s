@@ -11,7 +11,7 @@ Manages the K8s resources
 
 
 * Makefile targets
-#+begin_src bash :results pp
+#+begin_src bash :results pp :exports both
 make help
 #+end_src
 
