@@ -9,7 +9,9 @@ ENV_FILE := ./.env
 
 TOFU := tofu -chdir="$(INFRA_DIR)"
 HELM := helm
-HELMFILE := helmfile -f "$(HELM_DIR)/helmfile.yaml"
+HELMFILE_YAML := $(HELM_DIR)/helmfile.yaml
+HELMFILE := helmfile -f "$(HELMFILE_YAML)"
+KUBECTL := kubectl
 
 # Define the cluster auth
 ENV ?= dev
@@ -17,6 +19,9 @@ KUBECONFIG_DEV := /home/$$USER/.kube/config
 KUBECONFIG_PROD := $$($(TOFU) output -raw kubeconfig_path 2>/dev/null | xargs -IPATH realpath '$(INFRA_DIR)/PATH' || echo "")
 # See https://github.com/roboll/helmfile/issues/173
 KUBECONFIG_EFFECTIVE := $(if $(filter $(ENV),dev),$(KUBECONFIG_DEV),$(KUBECONFIG_PROD))
+
+# Helpers
+YQ_HELMFILE := cat "$(HELMFILE_YAML)" | yq
 
 .PHONY: help
 help:
@@ -30,25 +35,29 @@ help:
 	@echo "  KUBECONFIG_DEV: $(KUBECONFIG_DEV)"
 	@echo "  HELM_DIR: $(HELM_DIR)"
 	@echo "  HELM: $(HELM)"
+	@echo "  HELMFILE_YAML: $(HELMFILE_YAML)"
 	@echo "  HELMFILE: $(HELMFILE)"
+	@echo "  KUBECTL: $(KUBECTL)"
 	@echo "Dynamically obtained values:"
 	@echo "  KUBECONFIG_PROD: $(KUBECONFIG_PROD)"
 	@echo "  KUBECONFIG_EFFECTIVE: $(KUBECONFIG_EFFECTIVE)"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  Tofu targets:"
-	@echo "    tofu-init         Initialize infrastructure"
-	@echo "    tofu-plan         Plan infrastructure changes"
-	@echo "    tofu-apply        Apply infrastructure changes"
-	@echo "    tofu-refresh      Refresh infrastructure state"
+	@echo "    tofu-init                Initialize infrastructure"
+	@echo "    tofu-plan                Plan infrastructure changes"
+	@echo "    tofu-apply               Apply infrastructure changes"
+	@echo "    tofu-refresh             Refresh infrastructure state"
 	@echo "  Helm/helmfile targets:"
-	@echo "    helmfile-apply    Runs apply command with kubeconfig set"
-	@echo "    helmfile-diff     Runs diff helmfile command"
-	@echo "    helmfile-destroy  Runs destroy helmfile command"
-	@echo "    helmfile-sync     Runs sync helmfile command"
-	@echo "    helm-test         Tests all charts"
+	@echo "    helmfile-apply           Runs apply command with kubeconfig set"
+	@echo "    helmfile-diff            Runs diff helmfile command"
+	@echo "    helmfile-destroy         Runs destroy helmfile command"
+	@echo "    helmfile-sync            Runs sync helmfile command"
+	@echo "    helm-test                Tests all charts"
+	@echo "  KubeCTL targets:"
+	@echo "    kubectl-loadBalancer-ip  Gets load balancer public IP"
 	@echo "  Other targets:"
-	@echo "    clean              Clean up generated files"
+	@echo "    clean                    Clean up generated files"
 
 .PHONY: tofu-init
 tofu-init:
@@ -99,6 +108,12 @@ helmfile-destroy:
 	export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
 	$(HELMFILE) destroy
 
+# kubectl
+
+.PHONY: kubectl-loadBalancer-ip
+kubectl-loadBalancer-ip:
+	@export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
+	$(KUBECTL) get svc ingress-nginx-controller -n "$$($(YQ_HELMFILE) '.releases.[0].name')" -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'
 
 # Others
 
