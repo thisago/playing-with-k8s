@@ -2,9 +2,47 @@
 
 Initial setup for a complete K8s setup.
 
-* OpenTofu
-Manages Vultr clusters and K8s resources
+* Overview
+** OpenTofu
+Manages clusters via Vultr provider
 
-* Helm
+** Helmfile
+Manages the K8s resources
 
-* Cloud-init
+
+* Makefile targets
+#+begin_src bash :results pp
+make help
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Current configs:
+  ENV: dev
+  ENV_FILE: ./.env
+  INFRA_DIR: ./clusters
+  INFRA_PLAN_FILE: plan.tfplan
+  INFRA_TFSTATE_DIR: ./clusters/tfstates
+  TOFU: tofu -chdir=./clusters
+  KUBECONFIG_DEV: /home/user/.kube/config
+  HELM_DIR: ./helm
+  HELM: helm
+  HELMFILE: helmfile -f ./helm/helmfile.yaml
+Dynamically obtained values:
+  KUBECONFIG_PROD: ./clusters/.kubeconfig
+  KUBECONFIG_EFFECTIVE: /home/user/.kube/config
+
+Available targets:
+  Tofu targets:
+    tofu-init       Initialize infrastructure
+    tofu-plan       Plan infrastructure changes
+    tofu-apply      Apply infrastructure changes
+    tofu-refresh    Refresh infrastructure state
+  Helm/helmfile targets:
+    helmfile-apply    Runs apply command with kubeconfig set
+    helmfile-diff     Runs diff helmfile command
+    helmfile-destroy  Runs destroy helmfile command
+    helm-test         Tests all charts
+  Other targets:
+    clean            Clean up generated files
+#+end_example
