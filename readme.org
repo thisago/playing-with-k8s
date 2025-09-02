@@ -39,20 +39,21 @@ Current configs:
   HELM: helm
   HELMFILE: helmfile -f ./helm/helmfile.yaml
 Dynamically obtained values:
-  KUBECONFIG_PROD: ./clusters/.kubeconfig
+  KUBECONFIG_PROD: /home/user/Documents/repos/infra/.kubeconfig
   KUBECONFIG_EFFECTIVE: /home/user/.kube/config
 
 Available targets:
   Tofu targets:
-    tofu-init       Initialize infrastructure
-    tofu-plan       Plan infrastructure changes
-    tofu-apply      Apply infrastructure changes
-    tofu-refresh    Refresh infrastructure state
+    tofu-init         Initialize infrastructure
+    tofu-plan         Plan infrastructure changes
+    tofu-apply        Apply infrastructure changes
+    tofu-refresh      Refresh infrastructure state
   Helm/helmfile targets:
     helmfile-apply    Runs apply command with kubeconfig set
     helmfile-diff     Runs diff helmfile command
     helmfile-destroy  Runs destroy helmfile command
+    helmfile-sync     Runs sync helmfile command
     helm-test         Tests all charts
   Other targets:
-    clean            Clean up generated files
+    clean              Clean up generated files
 #+end_example

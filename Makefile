@@ -14,7 +14,8 @@ HELMFILE := helmfile -f "$(HELM_DIR)/helmfile.yaml"
 # Define the cluster auth
 ENV ?= dev
 KUBECONFIG_DEV := /home/$$USER/.kube/config
-KUBECONFIG_PROD := $(INFRA_DIR)/$$($(TOFU) output -raw kubeconfig_path 2>/dev/null || echo "")
+KUBECONFIG_PROD := $$($(TOFU) output -raw kubeconfig_path 2>/dev/null | xargs realpath || echo "")
+# See https://github.com/roboll/helmfile/issues/173
 KUBECONFIG_EFFECTIVE := $(if $(filter $(ENV),dev),$(KUBECONFIG_DEV),$(KUBECONFIG_PROD))
 
 .PHONY: help
@@ -44,6 +45,7 @@ help:
 	@echo "    helmfile-apply    Runs apply command with kubeconfig set"
 	@echo "    helmfile-diff     Runs diff helmfile command"
 	@echo "    helmfile-destroy  Runs destroy helmfile command"
+	@echo "    helmfile-sync     Runs sync helmfile command"
 	@echo "    helm-test         Tests all charts"
 	@echo "  Other targets:"
 	@echo "    clean              Clean up generated files"
@@ -86,6 +88,11 @@ helmfile-apply: internal-guard-cluster
 helmfile-diff: internal-guard-cluster
 	export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
 	$(HELMFILE) diff
+
+.PHONY: helmfile-sync
+helmfile-sync:
+	export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
+	$(HELMFILE) sync
 
 .PHONY: helmfile-destroy
 helmfile-destroy:
