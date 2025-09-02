@@ -9,6 +9,16 @@ Manages clusters via Vultr provider
 ** Helmfile
 Manages the K8s resources
 
+* Current services
+#+begin_src bash :results pp :exports results
+for chart in helm/*/Chart.yaml; do
+  yq '.name + " - " + .description' <"$chart"
+done
+#+end_src
+
+#+RESULTS:
+: nims-tofu-cloud - Hello World HTTP server in Nim
+
 
 * Makefile targets
 #+begin_src bash :results pp :exports both
