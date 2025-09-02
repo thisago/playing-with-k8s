@@ -30,6 +30,12 @@ done
 : nims-tofu-cloud - Hello World HTTP server in Nim
 
 
+* How to run
+1. Add your Vultr PAT at =.env=
+2. src_bash[:exports code]{make tofu-init tofu-plan tofu-apply helmfile-apply}
+3. Done.
+
+
 * Makefile targets
 #+begin_src bash :results pp :exports both
 make help
@@ -71,3 +77,5 @@ Available targets:
   Other targets:
     clean                    Clean up generated files
 #+end_example
+
+
