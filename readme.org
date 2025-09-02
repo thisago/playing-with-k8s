@@ -31,12 +31,22 @@ done
 
 
 * How to run
+** Production
 1. Add your Vultr PAT at =.env=
 2. Run
    #+begin_src bash
-   make tofu-init tofu-plan tofu-apply helmfile-apply
+   make ENV=prod tofu-init tofu-plan tofu-apply helmfile-apply
    #+end_src
-3. Done.
+
+** Local
+1. Start ~minikube~
+   #+begin_src bash
+   minikube start --driver=docker
+   #+end_src
+2. Run
+   #+begin_src bash
+   make helmfile-apply
+   #+end_src
 
 
 * Makefile targets
