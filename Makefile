@@ -63,24 +63,13 @@ tofu-apply:
 	test -f $(ENV_FILE) && source $(ENV_FILE) && \
 	test -f $(INFRA_DIR)/$(INFRA_PLAN_FILE) && \
 	$(TOFU) apply $(INFRA_PLAN_FILE)
-	$(MAKE) tofu-commit-tfstate
+	$(MAKE) internal-tofu-commit-tfstate
 
 .PHONY: tofu-refresh
 tofu-refresh:
 	test -f $(ENV_FILE) && source $(ENV_FILE) && \
 	$(TOFU) refresh
-	$(MAKE) tofu-commit-tfstate
-
-.PHONY: tofu-commit-tfstate
-tofu-commit-tfstate:
-	@cd $(INFRA_TFSTATE_DIR) && \
-	if ! git diff --quiet; then \
-		pre-commit run --all-files; \
-		git add . && \
-		git commit -m "chore: tfstate"; \
-	else \
-		echo "Nothing to commit"; \
-	fi
+	$(MAKE) internal-tofu-commit-tfstate
 
 # Helm
 
@@ -130,4 +119,15 @@ internal-guard-cluster:
 	if [ "$$cluster" != "minikube" ] && [ "$$cluster" != "docker-desktop" ]; then \
 		echo "Your local kubeconfig ($(KUBECONFIG_DEV)) seems to not be local (cluster: $$cluster)!"; \
 		exit 1; \
+	fi
+
+.PHONY: internal-tofu-commit-tfstate
+internal-tofu-commit-tfstate:
+	@cd $(INFRA_TFSTATE_DIR) && \
+	if ! git diff --quiet; then \
+		pre-commit run --all-files; \
+		git add . && \
+		git commit -m "chore: tfstate"; \
+	else \
+		echo "Nothing to commit"; \
 	fi
