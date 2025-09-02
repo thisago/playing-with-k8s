@@ -14,7 +14,7 @@ HELMFILE := helmfile -f "$(HELM_DIR)/helmfile.yaml"
 # Define the cluster auth
 ENV ?= dev
 KUBECONFIG_DEV := /home/$$USER/.kube/config
-KUBECONFIG_PROD := $$($(TOFU) output -raw kubeconfig_path 2>/dev/null | xargs realpath || echo "")
+KUBECONFIG_PROD := $$($(TOFU) output -raw kubeconfig_path 2>/dev/null | xargs -IPATH realpath '$(INFRA_DIR)/PATH' || echo "")
 # See https://github.com/roboll/helmfile/issues/173
 KUBECONFIG_EFFECTIVE := $(if $(filter $(ENV),dev),$(KUBECONFIG_DEV),$(KUBECONFIG_PROD))
 

@@ -39,7 +39,7 @@ Current configs:
   HELM: helm
   HELMFILE: helmfile -f ./helm/helmfile.yaml
 Dynamically obtained values:
-  KUBECONFIG_PROD: /home/user/Documents/repos/infra/.kubeconfig
+  KUBECONFIG_PROD: /home/user/Documents/repos/infra/clusters/.kubeconfig
   KUBECONFIG_EFFECTIVE: /home/user/.kube/config
 
 Available targets:
