@@ -36,17 +36,17 @@ help:
 	@echo ""
 	@echo "Available targets:"
 	@echo "  Tofu targets:"
-	@echo "    tofu-init       Initialize infrastructure"
-	@echo "    tofu-plan       Plan infrastructure changes"
-	@echo "    tofu-apply      Apply infrastructure changes"
-	@echo "    tofu-refresh    Refresh infrastructure state"
+	@echo "    tofu-init         Initialize infrastructure"
+	@echo "    tofu-plan         Plan infrastructure changes"
+	@echo "    tofu-apply        Apply infrastructure changes"
+	@echo "    tofu-refresh      Refresh infrastructure state"
 	@echo "  Helm/helmfile targets:"
 	@echo "    helmfile-apply    Runs apply command with kubeconfig set"
 	@echo "    helmfile-diff     Runs diff helmfile command"
 	@echo "    helmfile-destroy  Runs destroy helmfile command"
 	@echo "    helm-test         Tests all charts"
 	@echo "  Other targets:"
-	@echo "    clean            Clean up generated files"
+	@echo "    clean              Clean up generated files"
 
 .PHONY: tofu-init
 tofu-init:
@@ -86,7 +86,7 @@ tofu-commit-tfstate:
 
 .PHONY: helm-test
 helm-test:
-	helmfile -f $(HELM_DIR)/helmfile.yaml test --cleanup
+	$(HELMFILE) test --cleanup
 
 .PHONY: helmfile-apply
 helmfile-apply: internal-guard-cluster
