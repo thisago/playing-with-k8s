@@ -2,16 +2,14 @@
 
 Initial setup for a complete K8s setup.
 
-#+begin_src bash :exports both :wrap src org
+#+begin_src bash :exports both :results raw
 echo -n '[[http://'
 make ENV=prod kubectl-loadBalancer-ip
 echo '][Public IP of this load balancer]]'
 #+end_src
 
 #+RESULTS:
-#+begin_src org
 [[http://45.76.241.188][Public IP of this load balancer]]
-#+end_src
 
 
 * Overview
