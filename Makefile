@@ -111,7 +111,7 @@ clean:
 	@echo "Cleaning up generated files..."; \
 	files=( \
 		"$(INFRA_DIR)/$(INFRA_PLAN_FILE)" \
-		"$(INFRA_DIR)/$(KUBECONFIG_EFFECTIVE)" \
+		"$(INFRA_DIR)/$(KUBECONFIG_PROD)" \
 	); \
 	for file in $${files[@]}; do \
 		if [ -n "$$file" ] && [ -f "$$file" ]; then \
