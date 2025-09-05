@@ -3,31 +3,33 @@
 Initial setup for a complete K8s setup.
 
 #+begin_src bash :exports both :results raw
-echo -n '[[http://'
-make ENV=prod kubectl-loadBalancer-ip
-echo '][Public IP of the deployed load balancer]]'
+echo -n "[[$(make ENV=prod kubectl-ingress-url)][Public IP of the nginx ingress via NodePort]]"
 #+end_src
 
 #+RESULTS:
-[[http://45.76.241.188][Public IP of the deployed load balancer]]
+[[http://104.238.156.217:32080][Public IP of the nginx ingress via NodePort]]
 
 
 * Overview
 ** OpenTofu
-Manages clusters via Vultr provider
+Manages clusters via Vultr provider and works as a Source Of Truth for shared configuration between Makefile, Helm charts and itself.
 
 ** Helmfile
 Manages the K8s resources
 
-* Current services
-#+begin_src bash :results pp :exports results
-for chart in helm/*/Chart.yaml; do
-  yq '.name + " - " + .description' <"$chart"
-done
+* Active helmfile charts
+#+begin_src bash :results pp :wrap src org :exports both
+while read chartName; do
+  chartFile="./helm/$chartName/Chart.yaml"
+  echo "- $chartName$(test -f "$chartFile" && yq '" :: " + .description' <"$chartFile")"
+done <<<$(yq '.releases | .[] | .name' ./helm/helmfile.yaml)
 #+end_src
 
 #+RESULTS:
-: nims-tofu-cloud - Hello World HTTP server in Nim
+#+begin_src org
+- ingress-nginx
+- nims-tofu-cloud :: Hello World HTTP server in Nim
+#+end_src
 
 
 * How to run
@@ -84,11 +86,9 @@ Available targets:
     helmfile-diff            Runs diff helmfile command
     helmfile-destroy         Runs destroy helmfile command
     helmfile-sync            Runs sync helmfile command
-    helm-test                Tests all charts
+    helmfile-test            Tests all charts
   KubeCTL targets:
-    kubectl-loadBalancer-ip  Gets load balancer public IP
+    kubectl-ingress-url      Gets the public URL of ingress
   Other targets:
     clean                    Clean up generated files
 #+end_example
-
-

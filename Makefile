@@ -53,9 +53,9 @@ help:
 	@echo "    helmfile-diff            Runs diff helmfile command"
 	@echo "    helmfile-destroy         Runs destroy helmfile command"
 	@echo "    helmfile-sync            Runs sync helmfile command"
-	@echo "    helm-test                Tests all charts"
+	@echo "    helmfile-test            Tests all charts"
 	@echo "  KubeCTL targets:"
-	@echo "    kubectl-loadBalancer-ip  Gets load balancer public IP"
+	@echo "    kubectl-ingress-url      Gets the public URL of ingress"
 	@echo "  Other targets:"
 	@echo "    clean                    Clean up generated files"
 
@@ -84,8 +84,8 @@ tofu-refresh:
 
 # Helm
 
-.PHONY: helm-test
-helm-test:
+.PHONY: helmfile-test
+helmfile-test:
 	$(HELMFILE) test --cleanup
 
 .PHONY: helmfile-apply
@@ -110,10 +110,11 @@ helmfile-destroy:
 
 # kubectl
 
-.PHONY: kubectl-loadBalancer-ip
-kubectl-loadBalancer-ip:
+.PHONY: kubectl-ingress-url
+kubectl-ingress-url:
 	@export KUBECONFIG="$(KUBECONFIG_EFFECTIVE)"; \
-	$(KUBECTL) get svc ingress-nginx-controller -n "$$($(YQ_HELMFILE) '.releases.[0].name')" -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'
+	read NODE_IPV4 NODE_IPV6 <<<"$$( $(KUBECTL) get nodes -o=jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}' )"; \
+	echo "http://$$NODE_IPV4:32080"; \
 
 # Others
 
